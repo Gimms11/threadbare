@@ -38,7 +38,11 @@ var layer: int:
 		layer = value
 		z_index = layer
 
-var direction: DIRECTION = DIRECTION.NONE
+var direction: DIRECTION = DIRECTION.NONE:
+	set(value):
+		direction = value
+		if sprite:
+			_update_sprite_facing()
 
 var active: bool = true
 
@@ -47,6 +51,14 @@ var grid_position: Vector2i:
 	set = _set_grid_position
 var _board: Board2D:
 	set = _set_board
+
+## A sprite that will be flipped horizontally when the horizontal direction changes.
+@export var sprite: AnimatedSprite2D
+
+
+func _ready() -> void:
+	if sprite and not Engine.is_editor_hint():
+		sprite.play("idle")
 
 
 func _enter_tree() -> void:
@@ -90,11 +102,10 @@ func set_vector(vector: Vector2i) -> void:
 		Vector2i.DOWN: DIRECTION.DOWN,
 		Vector2i.LEFT: DIRECTION.LEFT,
 	}
-
 	if VECTOR_TO_DIRECTION.has(vector):
 		direction = VECTOR_TO_DIRECTION[vector]
-		return
-	direction = DIRECTION.NONE
+	else:
+		direction = DIRECTION.NONE
 
 
 func get_new_grid_position() -> Vector2i:
@@ -154,3 +165,15 @@ func _find_ancestor_board() -> Board2D:
 		search_node = search_parent
 	# Reached max search depth
 	return null
+
+
+## Flip sprite horizontally according to the horizontal direction.
+func _update_sprite_facing() -> void:
+	# Match the current movement direction
+	match direction:
+		DIRECTION.RIGHT:
+			# Face the sprite to the right (no horizontal flip)
+			sprite.flip_h = false
+		DIRECTION.LEFT:
+			# Face the sprite to the left (apply horizontal flip)
+			sprite.flip_h = true
