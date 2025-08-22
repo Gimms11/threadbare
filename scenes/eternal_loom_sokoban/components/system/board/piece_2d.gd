@@ -30,8 +30,12 @@ const DIRECTION_TO_KEY: Dictionary[DIRECTION, StringName] = {
 
 ## Unique Identifier for this piece. Should not match any other piece.
 @export var id: StringName
+
 ## Tag Identifiers for this piece. Pieces can share the same tag.
 @export var tags: Array[StringName]
+
+## A sprite that will be flipped horizontally when the horizontal direction changes.
+@export var sprite: AnimatedSprite2D
 
 var layer: int:
 	set(value):
@@ -54,6 +58,11 @@ var _board: Board2D:
 
 ## A sprite that will be flipped horizontally when the horizontal direction changes.
 @export var sprite: AnimatedSprite2D
+
+
+func _ready() -> void:
+	if sprite and not Engine.is_editor_hint():
+		sprite.play("idle")
 
 
 func _ready() -> void:
